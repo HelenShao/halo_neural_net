@@ -76,16 +76,17 @@ def read_data(f_rockstar, normalize = True, tensor = True):
         # Create container for normalized data
         data_norm = np.zeros((n_halos, n_properties), dtype=np.float32)
         
+        # Take log10 of J_mag (m_vir removed)
+        #data[:,2]  = np.log10(data[:,2]+1)
+        data[:,6]  = np.log10(data[:,6]+1)
+        
         for i in range(n_properties):
             mean = np.mean(data[:,i])
             std  = np.std(data[:,i])
             normalized = (data[:,i] - mean)/std
             data_norm[:,i] = normalized
+        
         return(data_norm)
-
-    # Take log10 of J_mag (m_vir removed)
-    #data[:,2]  = np.log10(data[:,2]+1)
-    data[:,6]  = np.log10(data[:,6]+1)
 
     # Normalize each property
     if normalize == True:
