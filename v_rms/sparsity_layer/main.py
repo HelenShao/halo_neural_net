@@ -32,6 +32,7 @@ class objective(object):
         #Files for saving results and best model
         f_text_file   = 'VRMS_FEAT_SEL_%d.txt'%(trial.number)
         f_best_model  = 'VRMS_FEAT_SEL_%d.pt'%(trial.number)
+        f_all_models  = 'VRMS_Models.txt'
 
         # Generate the model.
         model = architecture.neural_net(trial, input_size, n_min, 
@@ -72,7 +73,7 @@ class objective(object):
                 # Get the sparsity loss for L1 regularization
                 model_children = list(model.children())
                 w1 = model_children[0].weight
-                sparse_loss = torch.mean(torch.abs(w1))
+                sparse_loss = torch.mean(F.relu(w1))
                 
                 # Compute loss
                 loss    = criterion(output, TRUE) + L1*sparse_loss
@@ -109,6 +110,16 @@ class objective(object):
             f.write('%d %.5e %.5e\n'%(epoch, loss_valid, min_valid))
             f.close()
 
+        # Record the loss and the sparsity for plot
+        f = open(f_all_models, 'a')
+        
+        model_layers = list(model.children())
+        weights1 = model_layers[0].weight
+        sparsity = torch.sum(F.relu(weights1))/input_size
+        
+        f.write('%.5e %.5e\n'%(min_valid, sparsity))
+        f.close()
+        
         return min_valid
 
 ##################################### INPUT #######################################
@@ -120,7 +131,7 @@ mass_per_particle = 6.56561e+11
 f_rockstar = "Rockstar_z=0.0.txt"
 
 # Training Parameters
-num_epochs    = 700
+num_epochs    = 500
 batch_size    = 64
 
 # Architecture Parameters
