@@ -18,7 +18,7 @@ class FirstLayer(nn.Module):
     def forward(self, input):
         # Instead of multiplying the weight with halo input, multiply weight with 
         # a row of ones, get the relu of that, and multiply that with the actual input 
-        output = input*F.leaky_relu(self.weight)
+        output = input*F.relu(self.weight)
         return output
 
 # Define the model architecture 
